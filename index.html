@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>mkg03a3s Chat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a0a0f 0%, #0d1117 50%, #0a0f1a 100%);
+            font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px 16px 30px;
+            color: #e8eaf0;
+        }
+
+        .app-shell {
+            width: 100%;
+            max-width: 760px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #2a2f45; border-radius: 4px; }
+
+        .header-glow {
+            background: linear-gradient(90deg, #4f7fff, #a78bfa, #4f7fff);
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine {
+            to { background-position: 200% center; }
+        }
+        
+
+        .badge {
+            background: linear-gradient(135deg, rgba(79,127,255,0.15), rgba(167,139,250,0.15));
+            border: 1px solid rgba(79,127,255,0.3);
+            color: #a78bfa;
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 2px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .info-panel {
+            width: 100%;
+            max-width: 760px;
+            margin: 18px 0 0;
+            padding: 18px 20px;
+            border-radius: 22px;
+            background: rgba(15, 18, 33, 0.92);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 18px 40px rgba(0,0,0,0.18);
+            display: grid;
+            gap: 16px;
+        }
+
+        .info-box {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            color: #dbe3ff;
+            font-size: 13px;
+        }
+
+        .log-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 180px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        .log-item {
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #e7ecff;
+            font-size: 13px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .log-item.info { background: rgba(79,127,255,0.12); border-color: rgba(79,127,255,0.24); }
+        .log-item.warn { background: rgba(255,180,70,0.12); border-color: rgba(255,180,70,0.25); color: #ffdfb5; }
+        .log-item.error { background: rgba(255,95,95,0.12); border-color: rgba(255,95,95,0.25); color: #ffd3d3; }
+
+        .status-pill {
+            color: #e8eaf0;
+            font-size: 12px;
+            padding: 8px 14px;
+            background: rgba(79,127,255,0.16);
+            border: 1px solid rgba(79,127,255,0.25);
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 760px;
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .msg-user {
+            align-self: flex-end;
+            max-width: 75%;
+            background: linear-gradient(135deg, #3b5bdb, #5c7cfa);
+            color: #fff;
+            border-radius: 18px 18px 4px 18px;
+            padding: 12px 16px;
+            font-size: 14.5px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            box-shadow: 0 4px 20px rgba(79,127,255,0.25);
+            animation: fadeUp 0.25s ease;
+        }
+
+        .msg-assistant {
+            align-self: flex-start;
+            max-width: 80%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: #dce0f0;
+            border-radius: 18px 18px 18px 4px;
+            padding: 14px 18px;
+            font-size: 14.5px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            animation: fadeUp 0.25s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .msg-label {
+            font-family: 'Space Mono', monospace;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            opacity: 0.45;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .dot-loader {
+            display: inline-block;
+        }
+
+        .dot-loader span {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #5c7cfa;
+            margin: 0 3px;
+            animation: bounce 1.2s infinite;
+        }
+
+        .dot-loader span:nth-child(2) { animation-delay: 0.2s; }
+        .dot-loader span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+            40% { transform: translateY(-6px); opacity: 1; }
+        }
+
+        .input-area {
+            width: 100%;
+            max-width: 760px;
+            padding: 14px 16px;
+            border-radius: 28px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(14, 18, 34, 0.88);
+            backdrop-filter: blur(28px);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+        }
+
+        textarea {
+            flex: 1;
+            min-height: 48px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            color: #e8eaf0;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14.5px;
+            line-height: 1.5;
+            padding: 14px 16px;
+            resize: none;
+            max-height: 140px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+
+        textarea:focus { border-color: rgba(92,124,250,0.7); box-shadow: inset 0 0 0 1px rgba(92,124,250,0.16); }
+        textarea::placeholder { color: rgba(255,255,255,0.3); }
+
+        .send-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #4f7fff, #7b7cf0);
+            border: 1px solid rgba(255,255,255,0.16);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            box-shadow: 0 16px 36px rgba(42, 88, 255, 0.18);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .send-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+            pointer-events: none;
+        }
+
+        .send-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 20px 46px rgba(42, 88, 255, 0.22);
+        }
+
+        .send-btn:active:not(:disabled) {
+            transform: translateY(0);
+            box-shadow: 0 10px 20px rgba(42, 88, 255, 0.16);
+        }
+
+        .send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            box-shadow: none;
+            background: rgba(92,124,250,0.22);
+        }
+
+        .send-btn.active {
+            background: linear-gradient(135deg, #f59e0b, #f97316);
+            box-shadow: 0 16px 36px rgba(245, 158, 11, 0.24);
+        }
+
+        .send-btn.active:hover:not(:disabled) {
+            box-shadow: 0 20px 46px rgba(245, 158, 11, 0.28);
+        }
+
+        .empty-state {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            opacity: 0.58;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        @media (max-width: 780px) {
+            .header {
+                padding: 18px;
+            }
+            .header-top,
+            .chat-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .session-group,
+            .model-group {
+                min-width: auto;
+                flex: 1 1 auto;
+            }
+            .session-btn {
+                width: 100%;
+            }
+            .input-area {
+                padding: 14px;
+            }
+            .chat-container,
+            .info-panel {
+                padding: 18px;
+            }
+        }
+
+        .empty-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(59,91,219,0.3), rgba(167,139,250,0.3));
+            border: 1px solid rgba(79,127,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+
+        .header {
+            width: 100%;
+            max-width: 760px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            background: rgba(10,10,20,0.98);
+            backdrop-filter: blur(24px);
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+            z-index: 10;
+        }
+
+        .header-main {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .header-top {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .header-title {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .header-title h1 {
+            font-size: 24px;
+            margin: 0;
+            line-height: 1.1;
+            white-space: nowrap;
+        }
+
+        .header-subtitle {
+            color: #a5b4fc;
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 6px;
+            max-width: 100%;
+            opacity: 0.82;
+        }
+
+        .chat-controls {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            justify-content: flex-start;
+        }
+
+        .session-group,
+        .model-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            color: #c6d0ea;
+            font-size: 12px;
+            min-width: 180px;
+            flex: 1 1 180px;
+        }
+
+        .model-select,
+        .session-group select,
+        .custom-model-input {
+            width: 100%;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            color: #e8eaf0;
+            font-size: 14px;
+            padding: 10px 12px;
+            outline: none;
+        }
+
+        .session-btn {
+            padding: 12px 18px;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 999px;
+            background: rgba(79,127,255,0.18);
+            color: #eef2ff;
+            cursor: pointer;
+            font-size: 14px;
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+            flex: 0 0 auto;
+            box-shadow: 0 12px 30px rgba(31, 57, 160, 0.12);
+            backdrop-filter: blur(14px);
+        }
+
+        .session-btn:hover {
+            transform: translateY(-1px);
+            background: rgba(79,127,255,0.26);
+            border-color: rgba(79,127,255,0.26);
+        }
+
+        .model-select:focus,
+        .session-group select:focus,
+        .custom-model-input:focus {
+            border-color: rgba(92,124,250,0.6);
+        }
+
+        .status-pill {
+            color: #e8eaf0;
+            font-size: 12px;
+            padding: 8px 14px;
+            background: rgba(79,127,255,0.18);
+            border: 1px solid rgba(79,127,255,0.25);
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+
+        .model-select:focus { border-color: rgba(92,124,250,0.5); }
+
+        .header-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #4f7fff, #a78bfa);
+            box-shadow: 0 6px 22px rgba(79,127,255,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .header-icon::before {
+            content: 'AI';
+            font-family: 'Space Mono', monospace;
+            font-size: 20px;
+            color: rgba(255,255,255,0.92);
+            letter-spacing: 1px;
+            transform: rotate(-2deg);
+        }
+
+        .chat-controls {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            justify-content: flex-start;
+            width: 100%;
+        }
+
+        .session-group,
+        .model-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            color: #c6d0ea;
+            font-size: 12px;
+            min-width: 180px;
+            flex: 1 1 180px;
+        }
+
+        .session-group label,
+        .model-group label {
+            font-size: 12px;
+            color: #c6d0ea;
+        }
+
+        .session-group select,
+        .model-group select,
+        .custom-model-input {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 14px;
+            color: #e8eaf0;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .custom-model-input {
+            min-width: 180px;
+            flex: 2 1 240px;
+        }
+
+        .status-pill {
+            color: #e8eaf0;
+            font-size: 12px;
+            padding: 8px 14px;
+            background: rgba(79,127,255,0.18);
+            border: 1px solid rgba(79,127,255,0.25);
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .thinking-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            background-image: url('logo.png');
+            background-size: 1536px 1024px;
+            background-position: 384px center;
+            background-repeat: no-repeat;
+            margin-right: 10px;
+            flex-shrink: 0;
+            animation: pulse 1.5s ease-in-out infinite, float 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(79,127,255,0.15); }
+            50% { transform: scale(1.08); box-shadow: 0 0 16px rgba(79,127,255,0.2); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-2px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <!-- Header -->
+        <div class="header">
+        <div class="header-main">
+            <div class="header-top">
+                <div class="header-title">
+                    <div class="header-icon" role="img" aria-label="mkg logo"></div>
+                    <div>
+                        <h1 class="header-glow">mkg03a3s</h1>
+                        <p class="header-subtitle">Lokale KI-Chat-Anwendung mit Sprachfunktionen und Modell-Auswahl.</p>
+                    </div>
+                </div>
+                <span class="status-pill" id="statusLabel">Modell: mkg03a3s</span>
+            </div>
+            <div class="chat-controls">
+                <div class="session-group">
+                    <label for="sessionSelect">Chat auswählen</label>
+                    <select id="sessionSelect"></select>
+                </div>
+                <div class="model-group">
+                    <label for="modelSelect">Modell</label>
+                    <select id="modelSelect" class="model-select"></select>
+                </div>
+                <div class="model-group">
+                    <label for="customModelInput">Eigenes Modell</label>
+                    <input id="customModelInput" class="custom-model-input" type="text" placeholder="z. B. claude" aria-label="Eigenes Modell" />
+                </div>
+                <button class="session-btn" id="newSessionBtn" type="button">Neuer Chat</button>
+                <button class="session-btn" id="checkModelBtn" type="button">KI-Modell prüfen</button>
+                <button class="session-btn" id="installBtn" type="button">📦 App installieren</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-panel">
+        <div class="info-box">
+            <div style="display:flex; gap:8px; align-items:center;">
+                <span class="badge">System</span>
+                <strong>Logs & Status</strong>
+            </div>
+            <span class="status-pill" id="statusMessage">Bereit</span>
+        </div>
+        <div class="log-panel" id="logPanel">
+            <div class="log-item info">Bereit. Wähle ein Modell und sende deine erste Anfrage.</div>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-container" id="chatContainer">
+        <div class="empty-state" id="emptyState">
+            <div class="empty-icon">🍌</div>
+            <p style="font-size: 15px; color: #8892b0;">Die lokale KI kann dir auch ein Beispiel für eine Webseite über Bananen zeigen. Tippe einfach "Webseite über Bananen".</p>
+        </div>
+    </div>
+
+    <!-- Input -->
+    <div class="input-area">
+        <textarea
+            id="messageInput"
+            rows="1"
+            placeholder="Schreib eine Nachricht oder tippe 'suche ...' für Web-Suche…"
+            onkeydown="handleKeyPress(event)"
+        ></textarea>
+        <button class="send-btn" id="speechButton" type="button" aria-label="Spracheingabe starten">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1.75a3.5 3.5 0 0 1 3.5 3.5v4.5a3.5 3.5 0 0 1-7 0V5.25A3.5 3.5 0 0 1 12 1.75z"/>
+                <path d="M19 10.25a7 7 0 0 1-14 0"/>
+                <line x1="12" y1="18" x2="12" y2="22"/>
+                <line x1="8" y1="22" x2="16" y2="22"/>
+            </svg>
+        </button>
+        <button class="send-btn" onclick="sendMessage()" id="sendButton" disabled aria-label="Senden">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+        </button>
+    </div>
+    </div>
+
+    <script>
+        const SYSTEM_PROMPT = `Du bist mkg03a3s, eine intelligente und selbstständig denkende Assistentin. Denke strukturiert, analysiere die Frage und gib klare, praktische Antworten. Antworte auf Deutsch, wenn der Nutzer Deutsch schreibt, sonst auf Englisch.`;
+
+        let messages = [];
+        let isLoading = false;
+        let recognition = null;
+        let recognitionActive = false;
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const speechRecognitionSupported = Boolean(SpeechRecognition);
+        const speechSynthesisSupported = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+
+        const API_BASE = window.location.origin.includes(':3000') ? '' : 'http://127.0.0.1:3000';
+        const API_CHAT_URL = API_BASE + '/api/chat';
+        const API_HISTORY_URL = API_BASE + '/api/history';
+        const API_CONFIG_URL = API_BASE + '/api/config';
+        const API_MODELS_URL = API_BASE + '/api/models';
+        const LOCAL_DRAFT_KEY = 'mkg03a3sDraftMessage';
+        const CHAT_SESSIONS_KEY = 'mkg03a3sChatSessions';
+        const CURRENT_SESSION_ID_KEY = 'mkg03a3sCurrentSessionId';
+        const DEFAULT_SESSION_ID = 'default';
+
+        let chatSessions = {};
+        let currentSessionId = DEFAULT_SESSION_ID;
+
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const emptyState = document.getElementById('emptyState');
+        const sessionSelect = document.getElementById('sessionSelect');
+        const newSessionBtn = document.getElementById('newSessionBtn');
+        const speechButton = document.getElementById('speechButton');
+        const checkModelBtn = document.getElementById('checkModelBtn');
+        const modelSelect = document.getElementById('modelSelect');
+        const customModelInput = document.getElementById('customModelInput');
+        const statusLabel = document.getElementById('statusLabel');
+        const statusMessage = document.getElementById('statusMessage');
+        const logPanel = document.getElementById('logPanel');
+
+        function appendLog(message, type = 'info') {
+            if (!logPanel) return;
+            // Verstecke verbose Sprach-Logs
+            const isVerboseLog = message.includes('Spracheingabe') || message.includes('Spracherkennung') || message.includes('läuft') || message.includes('beendet');
+            if (isVerboseLog) return;
+            const item = document.createElement('div');
+            item.className = `log-item ${type}`;
+            item.textContent = message;
+            logPanel.appendChild(item);
+            logPanel.scrollTop = logPanel.scrollHeight;
+        }
+
+        function setStatusMessage(message) {
+            // Status-Meldungen versteckt für sauberes UI
+            // if (statusMessage) {
+            //     statusMessage.textContent = message;
+            // }
+        }
+
+        function saveLocalHistory() {
+            try {
+                if (!chatSessions[currentSessionId]) return;
+                chatSessions[currentSessionId].history = messages;
+                chatSessions[currentSessionId].updatedAt = Date.now();
+                localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(chatSessions));
+                localStorage.setItem(CURRENT_SESSION_ID_KEY, currentSessionId);
+            } catch (error) {
+                console.warn('Lokaler Verlauf konnte nicht gespeichert werden:', error);
+            }
+        }
+
+        function loadLocalHistoryFallback(sessionId = currentSessionId) {
+            try {
+                const stored = localStorage.getItem(CHAT_SESSIONS_KEY);
+                if (!stored) return [];
+                const sessions = JSON.parse(stored);
+                if (!sessions || typeof sessions !== 'object') return [];
+                if (sessionId && sessions[sessionId]) {
+                    return sessions[sessionId].history || [];
+                }
+                const defaultSession = sessions[DEFAULT_SESSION_ID];
+                return defaultSession ? defaultSession.history || [] : [];
+            } catch (error) {
+                console.warn('Lokaler Verlauf konnte nicht geladen werden:', error);
+                return [];
+            }
+        }
+
+        function loadSessionsFromStorage() {
+            try {
+                const stored = localStorage.getItem(CHAT_SESSIONS_KEY);
+                const storedCurrent = localStorage.getItem(CURRENT_SESSION_ID_KEY);
+                chatSessions = stored ? JSON.parse(stored) : {};
+                if (!chatSessions || typeof chatSessions !== 'object') {
+                    chatSessions = {};
+                }
+                currentSessionId = storedCurrent || DEFAULT_SESSION_ID;
+                if (!chatSessions[currentSessionId]) {
+                    currentSessionId = DEFAULT_SESSION_ID;
+                }
+            } catch (error) {
+                console.warn('Session-Daten konnten nicht geladen werden:', error);
+                chatSessions = {};
+                currentSessionId = DEFAULT_SESSION_ID;
+            }
+        }
+
+        function saveSessionsToStorage() {
+            try {
+                localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(chatSessions));
+                localStorage.setItem(CURRENT_SESSION_ID_KEY, currentSessionId);
+            } catch (error) {
+                console.warn('Session-Daten konnten nicht gespeichert werden:', error);
+            }
+        }
+
+        function createNewSession(name = '') {
+            const sessionId = `session-${Date.now()}`;
+            const index = Object.keys(chatSessions).length + 1;
+            chatSessions[sessionId] = {
+                id: sessionId,
+                name: name || `Chat ${index}`,
+                history: [],
+                createdAt: Date.now(),
+                updatedAt: Date.now()
+            };
+            currentSessionId = sessionId;
+            saveSessionsToStorage();
+            renderSessionSelect();
+            loadSessionHistory(sessionId, true);
+        }
+
+        function renderSessionSelect() {
+            sessionSelect.innerHTML = '';
+            const keys = Object.keys(chatSessions);
+            if (keys.length === 0) {
+                createNewSession();
+                return;
+            }
+
+            keys.sort((a, b) => (chatSessions[a].updatedAt || 0) - (chatSessions[b].updatedAt || 0));
+            keys.forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = chatSessions[key].name;
+                if (key === currentSessionId) {
+                    option.selected = true;
+                }
+                sessionSelect.appendChild(option);
+            });
+        }
+
+        function loadSessionHistory(sessionId, skipFetch = false) {
+            currentSessionId = sessionId;
+            saveSessionsToStorage();
+            renderSessionSelect();
+            messages = [];
+            if (emptyState) {
+                chatContainer.innerHTML = '';
+                chatContainer.appendChild(emptyState);
+                emptyState.style.display = 'block';
+            } else {
+                chatContainer.innerHTML = '';
+            }
+
+            if (!skipFetch) {
+                fetch(`${API_HISTORY_URL}?sessionId=${encodeURIComponent(sessionId)}`)
+                    .then(response => response.ok ? response.json() : Promise.reject(response))
+                    .then(data => {
+                        const history = Array.isArray(data.history) ? data.history : [];
+                        messages = history;
+                        history.forEach(item => addMessage(item.role, item.content));
+                        saveLocalHistory();
+                    })
+                    .catch(() => {
+                        const localHistory = loadLocalHistoryFallback(sessionId);
+                        messages = localHistory;
+                        localHistory.forEach(item => addMessage(item.role, item.content));
+                    });
+            } else {
+                const localHistory = loadLocalHistoryFallback(sessionId);
+                messages = localHistory;
+                localHistory.forEach(item => addMessage(item.role, item.content));
+            }
+        }
+
+        function getActiveModelSelection() {
+            const customValue = customModelInput.value.trim();
+            return customValue.length > 0 ? customValue : modelSelect.value;
+        }
+
+        async function saveSelectedModel(modelName) {
+            try {
+                await fetch(API_CONFIG_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ selectedModel: modelName })
+                });
+            } catch (error) {
+                console.warn('Konfiguration konnte nicht gespeichert werden:', error);
+            }
+        }
+
+        async function loadModelOptions() {
+            try {
+                const response = await fetch(API_MODELS_URL);
+                if (!response.ok) throw new Error('Modelle konnten nicht geladen werden.');
+                const data = await response.json();
+                const models = Array.isArray(data.models) ? data.models : [];
+                modelSelect.innerHTML = '';
+                models.forEach(modelId => {
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = modelId;
+                    modelSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.warn('Modelle konnten nicht geladen werden:', error);
+                const fallbackModels = ['mkg03a3s', 'claude', 'gpt-4', 'gemini', 'llama3', 'mistral', 'codellama', 'deepseek', 'local'];
+                modelSelect.innerHTML = '';
+                fallbackModels.forEach(modelId => {
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = modelId;
+                    modelSelect.appendChild(option);
+                });
+                setStatusMessage('Backend nicht erreichbar. Lokale Modelle geladen.');
+            }
+        }
+
+        async function loadCurrentModel() {
+            try {
+                const [modelsResp, configResp] = await Promise.all([
+                    fetch(API_MODELS_URL),
+                    fetch(API_CONFIG_URL)
+                ]);
+                const modelsData = modelsResp.ok ? await modelsResp.json() : null;
+                const configData = configResp.ok ? await configResp.json() : null;
+                const models = Array.isArray(modelsData?.models) ? modelsData.models : ['mkg03a3s', 'claude', 'gpt-4', 'o1', 'gpt-4o', 'gemini', 'llama3', 'mistral', 'codellama', 'deepseek', 'deepseek-r1', 'qwen', 'grok'];
+                const selectedModel = configData?.config?.selectedModel || 'mkg03a3s';
+
+                modelSelect.innerHTML = '';
+                models.forEach(modelId => {
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = modelId;
+                    modelSelect.appendChild(option);
+                });
+
+                if (models.includes(selectedModel)) {
+                    modelSelect.value = selectedModel;
+                    customModelInput.value = '';
+                } else {
+                    modelSelect.value = 'mkg03a3s';
+                    customModelInput.value = selectedModel;
+                }
+                updateStatusLabel();
+                setStatusMessage(`Aktuelles Modell geladen: ${getActiveModelSelection()}`);
+            } catch (error) {
+                console.warn('Aktuelles Modell konnte nicht geladen werden:', error);
+                const fallbackModels = ['mkg03a3s', 'claude', 'gpt-4', 'gemini', 'llama3', 'mistral', 'codellama', 'deepseek', 'local'];
+                modelSelect.innerHTML = '';
+                fallbackModels.forEach(modelId => {
+                    const option = document.createElement('option');
+                    option.value = modelId;
+                    option.textContent = modelId;
+                    modelSelect.appendChild(option);
+                });
+                modelSelect.value = 'mkg03a3s';
+                customModelInput.value = '';
+                updateStatusLabel();
+                setStatusMessage('Warnung: Backend nicht erreichbar. Lokale Modelle geladen.');
+            }
+        }
+
+        function updateStatusLabel() {
+            if (!statusLabel) return;
+            statusLabel.textContent = `Modell: ${getActiveModelSelection()}`;
+        }
+
+        function handleModelSelectionChange() {
+            if (modelSelect.value !== 'auto') {
+                customModelInput.value = '';
+            }
+            saveSelectedModel(getActiveModelSelection());
+            updateStatusLabel();
+            setStatusMessage(`Modell geändert auf ${getActiveModelSelection()}`);
+        }
+
+        function handleCustomModelInput() {
+            saveSelectedModel(getActiveModelSelection());
+            updateStatusLabel();
+            setStatusMessage(`Eigenes Modell gesetzt: ${getActiveModelSelection()}`);
+        }
+
+        function handleSessionChange() {
+            const selectedSession = sessionSelect.value;
+            if (selectedSession && chatSessions[selectedSession]) {
+                loadSessionHistory(selectedSession);
+            }
+        }
+
+        function handleInstallClick() {
+            const downloadUrl = 'https://github.com/yourusername/mkg03a3s/releases/download/v1.0.0/mkg03a3s-setup.exe';
+            alert('App Installation:\n\n📥 Der Installer wird heruntergeladen.\n\nURL: ' + downloadUrl + '\n\nFalls diese App bereits als Desktop-Version läuft, ist sie bereits installiert!');
+            // Alternativ: window.location.href = downloadUrl; für direkten Download
+        }
+
+        function initSessions() {
+            loadSessionsFromStorage();
+            if (Object.keys(chatSessions).length === 0) {
+                createNewSession('Chat 1');
+            } else {
+                if (!chatSessions[currentSessionId]) {
+                    currentSessionId = Object.keys(chatSessions)[0];
+                }
+                renderSessionSelect();
+                loadSessionHistory(currentSessionId, true);
+            }
+            sessionSelect.addEventListener('change', handleSessionChange);
+            newSessionBtn.addEventListener('click', () => createNewSession());
+            if (speechButton) {
+                speechButton.addEventListener('click', toggleSpeechRecognition);
+            }
+            if (checkModelBtn) {
+                checkModelBtn.addEventListener('click', checkModelConnection);
+            }
+            const installBtn = document.getElementById('installBtn');
+            if (installBtn) {
+                installBtn.addEventListener('click', handleInstallClick);
+            }
+            modelSelect.addEventListener('change', handleModelSelectionChange);
+            customModelInput.addEventListener('input', handleCustomModelInput);
+        }
+
+
+        function updateSendButton() {
+            const hasText = messageInput.value.trim().length > 0;
+            sendButton.disabled = !hasText || isLoading;
+        }
+
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 140) + 'px';
+            updateSendButton();
+            try {
+                localStorage.setItem(LOCAL_DRAFT_KEY, this.value);
+            } catch (error) {
+                console.warn('Entwurf konnte nicht lokal gespeichert werden:', error);
+            }
+        });
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.style.display = 'flex';
+            messageDiv.style.flexDirection = 'column';
+            messageDiv.style.alignItems = role === 'user' ? 'flex-end' : 'flex-start';
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'msg-label';
+            labelDiv.style.textAlign = role === 'user' ? 'right' : 'left';
+            labelDiv.textContent = role === 'user' ? 'Du' : 'mkg03a3s';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = role === 'user' ? 'msg-user' : 'msg-assistant';
+            contentDiv.textContent = content;
+
+            messageDiv.appendChild(labelDiv);
+            messageDiv.appendChild(contentDiv);
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            if (emptyState) {
+                emptyState.style.display = 'none';
+            }
+
+            if (role === 'assistant' && speechSynthesisSupported) {
+                speakText(content);
+            }
+        }
+
+        function showLoading() {
+            isLoading = true;
+            updateSendButton();
+
+            const loadingDiv = document.createElement('div');
+            loadingDiv.style.display = 'flex';
+            loadingDiv.style.flexDirection = 'column';
+            loadingDiv.style.alignItems = 'flex-start';
+            loadingDiv.id = 'loadingMessage';
+
+            const labelDiv = document.createElement('div');
+            labelDiv.className = 'msg-label';
+            labelDiv.textContent = 'mkg03a3s';
+
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'msg-assistant';
+            contentDiv.style.display = 'flex';
+            contentDiv.style.alignItems = 'center';
+            contentDiv.style.gap = '10px';
+
+            const thinkingIcon = document.createElement('div');
+            thinkingIcon.className = 'thinking-icon';
+            thinkingIcon.setAttribute('aria-hidden', 'true');
+
+            const loaderDiv = document.createElement('div');
+            loaderDiv.className = 'dot-loader';
+            loaderDiv.innerHTML = '<span></span><span></span><span></span>';
+
+            contentDiv.appendChild(thinkingIcon);
+            contentDiv.appendChild(loaderDiv);
+            loadingDiv.appendChild(labelDiv);
+            loadingDiv.appendChild(contentDiv);
+
+            chatContainer.appendChild(loadingDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (loadingMessage) {
+                loadingMessage.remove();
+            }
+            isLoading = false;
+            updateSendButton();
+        }
+
+        function setSpeechButtonState(active) {
+            if (!speechButton) return;
+            if (active) {
+                speechButton.classList.add('active');
+            } else {
+                speechButton.classList.remove('active');
+            }
+        }
+
+        function initSpeechRecognition() {
+            if (!speechRecognitionSupported) {
+                appendLog('Spracheingabe wird nicht vom Browser unterstützt.', 'warn');
+                if (speechButton) {
+                    speechButton.disabled = true;
+                    speechButton.title = 'Spracheingabe nicht unterstützt';
+                }
+                return;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.lang = navigator.language || 'de-DE';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+            recognition.continuous = false;
+
+            recognition.addEventListener('result', event => {
+                const transcript = event.results[0][0].transcript;
+                appendLog(`Spracherkennung: ${transcript}`, 'info');
+                messageInput.value = transcript;
+                updateSendButton();
+            });
+
+            recognition.addEventListener('start', () => {
+                recognitionActive = true;
+                setSpeechButtonState(true);
+                // Status-Nachricht versteckt
+            });
+
+            recognition.addEventListener('end', () => {
+                recognitionActive = false;
+                setSpeechButtonState(false);
+                // Status-Nachricht versteckt
+            });
+
+            recognition.addEventListener('error', event => {
+                recognitionActive = false;
+                setSpeechButtonState(false);
+                const errorMsg = `Spracherkennung Fehler: ${event.error}`;
+                // Fehler-Log versteckt
+                // Status bleibt verborgen
+            });
+        }
+
+        function startSpeechRecognition() {
+            if (!recognition || recognitionActive) return;
+            try {
+                recognition.start();
+            } catch (error) {
+                appendLog(`Spracheingabe konnte nicht gestartet werden: ${error.message}`, 'error');
+            }
+        }
+
+        function stopSpeechRecognition() {
+            if (!recognition || !recognitionActive) return;
+            recognition.stop();
+        }
+
+        function toggleSpeechRecognition() {
+            if (!speechRecognitionSupported) return;
+            if (recognitionActive) {
+                stopSpeechRecognition();
+            } else {
+                startSpeechRecognition();
+            }
+        }
+
+        function speakText(text) {
+            if (!speechSynthesisSupported || !text) return;
+            const utterance = new SpeechSynthesisUtterance(text.replace(/```[\s\S]*?```/g, '').replace(/\n+/g, ' '));
+            utterance.lang = navigator.language || 'de-DE';
+            speechSynthesis.cancel();
+            speechSynthesis.speak(utterance);
+        }
+
+        function getLocalFallbackResponse(input) {
+            return null;
+        }
+
+        async function checkModelConnection() {
+            if (isLoading) return;
+            const prompt = 'Bitte prüfe, ob du aktuell ein KI-Modell verwendest und welches Modell das ist. Schreibe kurz, ob du lokal oder remote antwortest.';
+            addMessage('user', prompt);
+            messages.push({ role: 'user', content: prompt });
+            showLoading();
+            setStatusMessage('KI-Modell wird geprüft...');
+            appendLog('KI-Modell wird geprüft...', 'info');
+
+            try {
+                const response = await fetch(API_CHAT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: prompt,
+                        history: messages,
+                        model: getActiveModelSelection(),
+                        sessionId: currentSessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Fehler: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                let reply = data.reply || 'Keine Antwort vom KI-Modell erhalten.';
+                if (data.resolvedModel) {
+                    updateStatusLabel();
+                    statusLabel.textContent = `Modell: ${data.resolvedModel}`;
+                    appendLog(`Verwendetes Modell: ${data.resolvedModel}`, 'info');
+                }
+                if (data.fallback) {
+                    reply += '\n\n[Hinweis: Lokaler Fallback wurde verwendet.]';
+                    appendLog('Fallback-Antwort verwendet.', 'warn');
+                }
+                if (data.error) {
+                    appendLog(`Server meldet: ${data.error}`, 'warn');
+                }
+                messages.push({ role: 'assistant', content: reply });
+                addMessage('assistant', reply);
+                saveLocalHistory();
+                setStatusMessage('KI-Prüfung abgeschlossen');
+            } catch (error) {
+                console.error('Fehler:', error);
+                setStatusMessage('Fehler bei der KI-Prüfung');
+                appendLog(`Fehler bei der KI-Prüfung: ${error.message}`, 'error');
+                addMessage('assistant', 'Fehler beim Prüfen der KI-Verbindung. Bitte überprüfe die Backend-Verbindung.');
+            }
+
+            hideLoading();
+        }
+
+        async function sendMessage() {
+            const input = messageInput.value.trim();
+            if (!input || isLoading) return;
+
+            addMessage('user', input);
+            messages.push({ role: 'user', content: input });
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            updateSendButton();
+
+            showLoading();
+            setStatusMessage('Nachricht wird gesendet...');
+            appendLog(`Sende Nachricht mit Modell: ${getActiveModelSelection()}`, 'info');
+
+            const modelName = getActiveModelSelection();
+            try {
+                const response = await fetch(API_CHAT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: input,
+                        history: messages,
+                        model: modelName,
+                        sessionId: currentSessionId
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Fehler: ${response.status} - ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                let reply = data.reply || 'Fehler beim Abrufen der Antwort.';
+                if (data.fallback) {
+                    reply += '\n\n[Hinweis: Dies ist eine lokale Fallback-Antwort, weil das KI-Modell nicht erreichbar war oder ein Fehler auftrat.]';
+                    appendLog('Fallback-Antwort verwendet.', 'warn');
+                } else {
+                    appendLog('Antwort erfolgreich empfangen.', 'info');
+                }
+                if (data.error) {
+                    appendLog(`Server meldet: ${data.error}`, 'warn');
+                }
+
+                messages.push({ role: 'assistant', content: reply });
+                addMessage('assistant', reply);
+                saveLocalHistory();
+                localStorage.removeItem(LOCAL_DRAFT_KEY);
+                setStatusMessage('Antwort empfangen');
+            } catch (error) {
+                console.error('Fehler:', error);
+                setStatusMessage('Fehler beim Senden der Nachricht');
+                appendLog(`Fehler beim Senden der Nachricht: ${error.message}`, 'error');
+                let errorMessage = 'Ein Fehler ist aufgetreten. ';
+
+                if (error.message.includes('429')) {
+                    errorMessage += 'API-Limit erreicht. Warte einen Moment oder versuche es später erneut.';
+                } else if (error.message.includes('500')) {
+                    errorMessage += 'Server-Fehler. Versuche es später erneut.';
+                } else {
+                    errorMessage += 'Bitte versuche es erneut.';
+                }
+
+                const localResponse = getLocalFallbackResponse(input);
+                if (localResponse) {
+                    const reply = `${localResponse}\n\n[Lokale Offline-Antwort, da das KI-Modell nicht erreichbar ist.]`;
+                    messages.push({ role: 'assistant', content: reply });
+                    addMessage('assistant', reply);
+                    saveLocalHistory();
+                    localStorage.removeItem(LOCAL_DRAFT_KEY);
+                    setStatusMessage('Lokale Offline-Antwort generiert');
+                    hideLoading();
+                    return;
+                }
+                addMessage('assistant', errorMessage);
+            }
+
+            hideLoading();
+        }
+
+        // Initial setup
+        initSessions();
+        loadCurrentModel();
+        initSpeechRecognition();
+        updateSendButton();
+        const draft = localStorage.getItem(LOCAL_DRAFT_KEY);
+        if (draft) {
+            messageInput.value = draft;
+            updateSendButton();
+            messageInput.style.height = Math.min(messageInput.scrollHeight, 140) + 'px';
+        }
+
+    </script>
+</body>
+</html>

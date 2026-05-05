@@ -1,0 +1,60 @@
+{
+  "name": "tannai-api",
+  "version": "1.0.0",
+  "description": "Eigene KI-API für TannAI",
+  "main": "electron.js",
+  "scripts": {
+    "start": "node server.js",
+    "desktop": "electron .",
+    "dist:win": "electron-builder --win nsis --x64",
+    "dist:portable": "electron-builder --win portable --x64",
+    "dist:all": "electron-builder --win nsis,portable --x64",
+    "build:installer": "npm run dist:all",
+    "build:portable": "npm run dist:portable",
+    "build-installer": "node build-installer.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.22.1",
+    "node-fetch": "^2.7.0",
+    "node-telegram-bot-api": "^0.61.0"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2",
+    "electron-winstaller": "^5.4.0"
+  },
+  "build": {
+    "appId": "com.mkg03a3s.app",
+    "productName": "mkg03a3s",
+    "files": [
+      "**/*",
+      "!node_modules/*/{CHANGELOG,README,README.md,readme.md,Readme.md}"
+    ],
+    "directories": {
+      "output": "release"
+    },
+    "win": {
+      "icon": "logo.png",
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    },
+    "portable": {
+      "artifactName": "${productName}-Portable-${version}.${ext}"
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

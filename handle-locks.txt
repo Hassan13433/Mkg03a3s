@@ -1,0 +1,2 @@
+Unable to extract x64 image. Run Handle from a writeable directory.
+

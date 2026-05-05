@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download mkg03a3s App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .download-section {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .download-link:hover {
+            background-color: #0056b3;
+        }
+        .description {
+            margin-bottom: 15px;
+        }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+        .btn {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .btn-secondary {
+            background-color: #007bff;
+        }
+        .btn-secondary:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .status-ok {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 mkg03a3s - KI App Installer</h1>
+    
+    <div class="download-section">
+        <h2>⚡ Schneller Download</h2>
+        <div class="status status-ok">
+            <strong>✅ Installer oder App-Paket verfügbar!</strong> Klicken Sie unten, um die App herunterzuladen.
+        </div>
+        <div class="btn-group">
+            <a href="/download/installer" class="btn">📥 Installer/ZIP herunterladen</a>
+            <a href="/download/portable" class="btn btn-secondary">📦 Portable Version</a>
+        </div>
+        <p class="description" style="font-size: 12px; color: #666;">
+            <em>Aktuell ist nur ein Windows-Installer mit Electron Builder verfügbar. Eine Android-App benötigt ein separates mobiles Build-System.</em>
+        </p>
+    </div>
+    
+    <div class="download-section">
+        <h2>📋 Features</h2>
+        <ul>
+            <li>✅ Lokal laufende KI mit Ollama-Integration</li>
+            <li>✅ Keine Internetverbindung erforderlich für KI</li>
+            <li>✅ Moderne Desktop-App mit Electron</li>
+            <li>✅ Einfache Installation unter Windows</li>
+            <li>✅ Unterstützt alle heruntergeladenen Ollama-Modelle</li>
+        </ul>
+    </div>
+    
+    <div class="download-section">
+        <h2>🚀 Installation durchführen</h2>
+        <ol>
+            <li>Klicken Sie auf "Installer/ZIP herunterladen" oben</li>
+            <li>Führen Sie die heruntergeladene <code>.exe</code> oder <code>.zip</code>-Datei aus</li>
+            <li>Folgen Sie den Anweisungen des Installationsassistenten oder entpacken Sie die ZIP</li>
+            <li>Starten Sie die App nach der Installation</li>
+            <li>Wählen Sie ein Ollama-Modell und starten Sie ein Chat</li>
+        </ol>
+    </div>
+    
+    <div class="download-section">
+        <h2>❓ Hilfe</h2>
+        <p><strong>Ollama ist nicht installiert?</strong></p>
+        <p>Laden Sie Ollama unter <a href="https://ollama.ai" target="_blank">ollama.ai</a> herunter und installieren Sie es. Starten Sie dann einen Modell-Server mit:</p>
+        <pre>ollama serve</pre>
+        <p><strong>Keine Modelle vorhanden?</strong></p>
+        <p>Laden Sie ein Modell herunter mit:</p>
+        <pre>ollama pull mistral</pre>
+    </div>
+</body>
+</html>
